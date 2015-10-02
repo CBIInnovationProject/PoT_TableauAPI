@@ -44,10 +44,7 @@ public class GetURLDashboard {
         
         for (int i = 0; i < currentUserWorkbooks.size(); i++) {
 			WorkbookType workbook = currentUserWorkbooks.get(i);
-			if(workbook.getName().trim().equals("Weekly Report Datanomics")){
-				System.out.println(i+1+" "+workbook.getId()+" - "+workbook.getName());
-	        	List<ViewType> views = s_restApiUtils.invokeQueryViews(credential, currentSiteId, workbook.getId()).getView();
-			}
+	        List<ViewType> views = s_restApiUtils.invokeQueryViews(credential, currentSiteId, workbook.getId()).getView();
         }
 	}
 
