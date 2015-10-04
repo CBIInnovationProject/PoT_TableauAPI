@@ -22,6 +22,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -56,7 +57,8 @@ import com.tableausoftware.documentation.api.rest.bindings.WorkbookType;
  * REST API. This class is implemented as a singleton.
  */
 public class RestApiUtils {
-
+	StringEscapeUtils su = new StringEscapeUtils();
+	
     private enum Operation {
         ADD_WORKBOOK_PERMISSIONS(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/permissions")),
         APPEND_FILE_UPLOAD(getApiUriBuilder().path("sites/{siteId}/fileUploads/{uploadSessionId}")),
@@ -359,11 +361,11 @@ public class RestApiUtils {
      *            the ID of the target user
      * @return a list of workbooks if the query succeeded, otherwise <code>null</code>
      */
-    public WorkbookListType invokeQueryWorkbooks(TableauCredentialsType credential, String siteId, String userId) {
+    public WorkbookListType invokeQueryWorkbooks(TableauCredentialsType credential) {
 
-        m_logger.info(String.format("Querying workbooks on site '%s'.", siteId));
+        m_logger.info(String.format("Querying workbooks on site '%s'.", credential.getSite().getId()));
 
-        String url = Operation.QUERY_WORKBOOKS.getUrl(siteId, userId);
+        String url = Operation.QUERY_WORKBOOKS.getUrl(credential.getSite().getId(), credential.getUser().getId());
 
         // Makes a GET request with the authenticity token
         TsResponse response = get(url, credential.getToken());
@@ -573,7 +575,7 @@ public class RestApiUtils {
         // Creates the HTTP client object and makes the HTTP request to the
         // specified URL
         Client client = Client.create();
-        WebResource webResource = client.resource(url);
+        WebResource webResource = client.resource(url).queryParam("pageSize", "30").queryParam("pageNumber", "2");
 
         // Sets the header and makes a GET request
         ClientResponse clientResponse = webResource.header(TABLEAU_AUTH_HEADER, authToken).get(ClientResponse.class);

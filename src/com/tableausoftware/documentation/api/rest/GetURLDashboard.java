@@ -9,7 +9,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import com.tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
-import com.tableausoftware.documentation.api.rest.bindings.ViewType;
 import com.tableausoftware.documentation.api.rest.bindings.WorkbookType;
 import com.tableausoftware.documentation.api.rest.util.RestApiUtils;
 
@@ -36,15 +35,15 @@ public class GetURLDashboard {
         String contentUrl = s_properties.getProperty("site.default.contentUrl");
         
         TableauCredentialsType credential = s_restApiUtils.invokeSignIn(username, password, contentUrl);
-		String currentSiteId = credential.getSite().getId();
-		String currentUserId = credential.getUser().getId();
 		
-        List<WorkbookType> currentUserWorkbooks = s_restApiUtils.invokeQueryWorkbooks(credential, currentSiteId,
-                currentUserId).getWorkbook();
+        List<WorkbookType> currentUserWorkbooks = s_restApiUtils.invokeQueryWorkbooks(credential).getWorkbook();
         
+        System.out.println("List Workbooks : ");
         for (int i = 0; i < currentUserWorkbooks.size(); i++) {
 			WorkbookType workbook = currentUserWorkbooks.get(i);
-	        List<ViewType> views = s_restApiUtils.invokeQueryViews(credential, currentSiteId, workbook.getId()).getView();
+			if(workbook.getProject().getName().trim().equalsIgnoreCase("EIS"))
+				System.out.println(i+1+". "+workbook.getContentUrl());
+//	        List<ViewType> views = s_restApiUtils.invokeQueryViews(credential, currentSiteId, workbook.getId()).getView();
         }
 	}
 
