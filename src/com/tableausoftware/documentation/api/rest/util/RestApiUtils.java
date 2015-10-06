@@ -575,7 +575,7 @@ public class RestApiUtils {
         // Creates the HTTP client object and makes the HTTP request to the
         // specified URL
         Client client = Client.create();
-        WebResource webResource = client.resource(url).queryParam("pageSize", "30").queryParam("pageNumber", "2");
+        WebResource webResource = client.resource(url).queryParam("pageSize", "1000").queryParam("pageNumber", "1");
 
         // Sets the header and makes a GET request
         ClientResponse clientResponse = webResource.header(TABLEAU_AUTH_HEADER, authToken).get(ClientResponse.class);
