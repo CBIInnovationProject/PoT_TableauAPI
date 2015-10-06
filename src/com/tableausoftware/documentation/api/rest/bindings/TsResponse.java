@@ -56,6 +56,7 @@ import javax.xml.bind.annotation.XmlType;
     "projects",
     "sites",
     "views",
+    "users",
     "workbooks",
     "credentials",
     "error",
@@ -63,7 +64,8 @@ import javax.xml.bind.annotation.XmlType;
     "group",
     "permissions",
     "workbook",
-    "view"
+    "view",
+    "user"
 })
 @XmlRootElement(name = "tsResponse")
 public class TsResponse {
@@ -74,6 +76,7 @@ public class TsResponse {
     protected SiteListType sites;
     protected WorkbookListType workbooks;
     protected ViewListType views;
+    protected UserListType users;
     protected TableauCredentialsType credentials;
     protected ErrorType error;
     protected FileUploadType fileUpload;
@@ -81,6 +84,7 @@ public class TsResponse {
     protected PermissionsType permissions;
     protected WorkbookType workbook;
     protected ViewType view;
+    protected UserType user;
 
     /**
      * Gets the value of the pagination property.
@@ -367,6 +371,20 @@ public class TsResponse {
 		this.view = view;
 	}
     
-    
+	public UserListType getUsers() {
+		return users;
+	}
+	
+	public void setUsers(UserListType users) {
+		this.users = users;
+	}
+	
+	public UserType getUser() {
+		return user;
+	}
+	
+	public void setUser(UserType user) {
+		this.user = user;
+	}
 
 }

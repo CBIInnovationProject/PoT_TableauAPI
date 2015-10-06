@@ -47,6 +47,7 @@ import com.tableausoftware.documentation.api.rest.bindings.SiteType;
 import com.tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import com.tableausoftware.documentation.api.rest.bindings.TsRequest;
 import com.tableausoftware.documentation.api.rest.bindings.TsResponse;
+import com.tableausoftware.documentation.api.rest.bindings.UserListType;
 import com.tableausoftware.documentation.api.rest.bindings.ViewListType;
 import com.tableausoftware.documentation.api.rest.bindings.WorkbookListType;
 import com.tableausoftware.documentation.api.rest.bindings.WorkbookType;
@@ -67,6 +68,7 @@ public class RestApiUtils {
         QUERY_SITES(getApiUriBuilder().path("sites")),
         QUERY_WORKBOOKS(getApiUriBuilder().path("sites/{siteId}/users/{userId}/workbooks")),
         QUERY_VIEWS(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/views")),
+        QUERY_USERS_ON_SITE(getApiUriBuilder().path("sites/{siteId}/users")),
         SIGN_IN(getApiUriBuilder().path("auth/signin")),
         SIGN_OUT(getApiUriBuilder().path("auth/signout"));
 
@@ -1041,6 +1043,29 @@ public class RestApiUtils {
             m_logger.info("Query views is successful!");
 
             return response.getViews();
+        }
+
+        // No views were found
+        return null;
+    }
+    
+    /*
+     * Invoke Views 
+     */
+    public UserListType invokeQueryUsersOnSite(TableauCredentialsType credential) {
+
+        m_logger.info(String.format("Querying users on site '%s'.", credential.getSite().getId()));
+
+        String url = Operation.QUERY_USERS_ON_SITE.getUrl(credential.getSite().getId());
+
+        // Makes a GET request with the authenticity token
+        TsResponse response = get(url, credential.getToken());
+
+        // Verifies that the response has a views element
+        if (response.getUsers() != null) {
+            m_logger.info("Query users is successful!");
+
+            return response.getUsers();
         }
 
         // No views were found

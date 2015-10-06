@@ -16,7 +16,7 @@ import com.tableausoftware.documentation.api.rest.bindings.ViewType;
 import com.tableausoftware.documentation.api.rest.bindings.WorkbookType;
 import com.tableausoftware.documentation.api.rest.util.RestApiUtils;
 
-public class GetURLDashboard {
+public class GenerateStrutsXML {
 	private static final RestApiUtils s_restApiUtils = RestApiUtils.getInstance();
     private static Logger s_logger = Logger.getLogger(TestSignIn.class);
     private static Properties s_properties = new Properties();
