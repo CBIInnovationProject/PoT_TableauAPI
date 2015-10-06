@@ -22,7 +22,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -57,7 +56,6 @@ import com.tableausoftware.documentation.api.rest.bindings.WorkbookType;
  * REST API. This class is implemented as a singleton.
  */
 public class RestApiUtils {
-	StringEscapeUtils su = new StringEscapeUtils();
 	
     private enum Operation {
         ADD_WORKBOOK_PERMISSIONS(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/permissions")),

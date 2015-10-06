@@ -53,7 +53,7 @@ public class GetURLDashboard {
         System.out.println("List Workbooks : ");
         for (WorkbookType workbook: currentUserWorkbooks) {
 			System.out.println(i+". "+workbook.getContentUrl());
-			sbxml.append("\t<!-- "+workbook.getContentUrl()+" -->\n");
+			sbxml.append("\t<!-- "+i+". "+workbook.getContentUrl()+" -->\n");
 			sbxml.append("\t<package name=\""+workbook.getContentUrl()+"\" extends=\"default\" namespace=\"/module/"+workbook.getContentUrl()+"\">\n");
 			views = s_restApiUtils.invokeQueryViews(credential, credential.getSite().getId(), workbook.getId()).getView();
 			int j = 1;
