@@ -38,7 +38,7 @@ public class TestSignIn {
 		
 		List<UserType> users = s_restApiUtils.invokeQueryUsersOnSite(credential).getUser();
 		for(UserType user: users){
-			System.out.println(user.getName()+" "+user.getSiteRole());
+			System.out.println(user.getId()+" | "+user.getName()+" | "+user.getSiteRole()+" | "+user.getLastLogin());
 		}
 		
 		s_logger.info(String.format("Authentication token: %s", credential.getToken()));

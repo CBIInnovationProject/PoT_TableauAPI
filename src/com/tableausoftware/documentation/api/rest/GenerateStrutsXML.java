@@ -11,6 +11,7 @@ import java.util.Properties;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import com.tableausoftware.documentation.api.rest.bindings.PermissionsType;
 import com.tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import com.tableausoftware.documentation.api.rest.bindings.ViewType;
 import com.tableausoftware.documentation.api.rest.bindings.WorkbookType;
@@ -31,7 +32,7 @@ public class GenerateStrutsXML {
         try {
             s_properties.load(new FileInputStream("res/config.properties"));
         } catch (IOException e) {
-            s_logger.error("Failed to load configuration files.");
+            System.out.println("Failed to load configuration files.");
         }
     }
     
@@ -52,37 +53,40 @@ public class GenerateStrutsXML {
         int i = 1;
         System.out.println("List Workbooks : ");
         for (WorkbookType workbook: currentUserWorkbooks) {
-			System.out.println(i+". "+workbook.getContentUrl());
-			sbxml.append("\t<!-- "+i+". "+workbook.getContentUrl()+" -->\n");
-			sbxml.append("\t<package name=\""+workbook.getContentUrl()+"\" extends=\"default\" namespace=\"/module/"+workbook.getContentUrl()+"\">\n");
-			views = s_restApiUtils.invokeQueryViews(credential, credential.getSite().getId(), workbook.getId()).getView();
-			int j = 1;
-			for(ViewType view: views){
-				System.out.println(j+". "+view.getContentUrl());
-				sbxml.append("\t\t<action name=\""+view.getContentUrl().replace(workbook.getContentUrl()+"/sheets/", "")+"\" class=\"com.cbi.eis.controller.EISController\">\n");
-				sbxml.append("\t\t\t<result name=\"success\" type=\"velocity\">\n");
-				sbxml.append("\t\t\t\t/eis/view.vm\n");
-				sbxml.append("\t\t\t</result>\n\t\t</action>\n");
-				j++;
+			System.out.println(i+". "+workbook.getContentUrl()+" | "+workbook.getName()+" | "+workbook.getProject().getName()+" : ");
+			PermissionsType permissionsType = s_restApiUtils.invokeGetWorkbookPermission(credential, workbook.getId());
+			
+			System.out.println(permissionsType.getGranteeCapabilities());
+//			sbxml.append("\t<!-- "+i+". "+workbook.getContentUrl()+" -->\n");
+//			sbxml.append("\t<package name=\""+workbook.getContentUrl()+"\" extends=\"default\" namespace=\"/module/"+workbook.getContentUrl()+"\">\n");
+//			views = s_restApiUtils.invokeQueryViews(credential, credential.getSite().getId(), workbook.getId()).getView();
+//			int j = 1;
+//			for(ViewType view: views){
+//				System.out.println("\t"+j+". "+view.getContentUrl()+" | "+view.getName());
+//				sbxml.append("\t\t<action name=\""+view.getContentUrl().replace(workbook.getContentUrl()+"/sheets/", "")+"\" class=\"com.cbi.eis.controller.TableauURLAction\">\n");
+//				sbxml.append("\t\t\t<result name=\"success\" type=\"velocity\">\n");
+//				sbxml.append("\t\t\t\t/eis/view.vm\n");
+//				sbxml.append("\t\t\t</result>\n\t\t</action>\n");
+//				j++;
 			}
-			sbxml.append("\t</package>\n\n");
-			i++;
-        }
-        sbxml.append("</struts>");
-        (new File("C:/eis")).mkdirs();
-
-    	File filexml = new File("C:/eis/struts-eis.xml");
-    	if(filexml.exists()){
-			System.out.println("File is exist");
-		} else {
-			try {
-				BufferedWriter writer = new BufferedWriter(new FileWriter(filexml));
-				writer.write(sbxml.toString());
-				writer.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+//			sbxml.append("\t</package>\n\n");
+//			i++;
+//        }
+//        sbxml.append("</struts>");
+//        (new File("C:/local")).mkdirs();
+//
+//    	File filexml = new File("C:/local/struts-local.xml");
+//    	if(filexml.exists()){
+//			System.out.println("File is exist");
+//		} else {
+//			try {
+//				BufferedWriter writer = new BufferedWriter(new FileWriter(filexml));
+//				writer.write(sbxml.toString());
+//				writer.close();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 }

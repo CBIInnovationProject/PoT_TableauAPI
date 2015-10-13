@@ -17,6 +17,7 @@ import com.tableausoftware.documentation.api.rest.bindings.GroupType;
 import com.tableausoftware.documentation.api.rest.bindings.ProjectListType;
 import com.tableausoftware.documentation.api.rest.bindings.ProjectType;
 import com.tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
+import com.tableausoftware.documentation.api.rest.bindings.UserType;
 import com.tableausoftware.documentation.api.rest.bindings.WorkbookType;
 import com.tableausoftware.documentation.api.rest.util.RestApiUtils;
 
@@ -100,6 +101,7 @@ public class Demo {
         // Creates a non Active Directory group named "TableauExample"
         GroupType group = s_restApiUtils.invokeCreateGroup(credential, currentSiteId, "TableauExample");
 
+        UserType user = s_restApiUtils.invokeGetUser(credential, "77ee0f4c-b09f-4b59-87af-759c1fda2ce5");
         // Sets permission to allow the group to read the new workbook, but not
         // to modify its permissions
         Map<String, String> capabilities = new HashMap<String, String>();
@@ -108,10 +110,12 @@ public class Demo {
 
         // Creates the grantee capability element for the group
         GranteeCapabilitiesType groupCapabilities = s_restApiUtils.createGroupGranteeCapability(group, capabilities);
-
+        
+        GranteeCapabilitiesType userCapabilities = s_restApiUtils.createUserGranteeCapability(user, capabilities);
         // Adds the created group to the list of grantees
         List<GranteeCapabilitiesType> granteeCapabilities = new ArrayList<GranteeCapabilitiesType>();
         granteeCapabilities.add(groupCapabilities);
+        granteeCapabilities.add(userCapabilities);
 
         // Makes the call to add the permissions
         s_restApiUtils.invokeAddPermissionsToWorkbook(credential, currentSiteId, publishedWorkbook.getId(),

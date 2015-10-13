@@ -48,6 +48,7 @@ import com.tableausoftware.documentation.api.rest.bindings.TableauCredentialsTyp
 import com.tableausoftware.documentation.api.rest.bindings.TsRequest;
 import com.tableausoftware.documentation.api.rest.bindings.TsResponse;
 import com.tableausoftware.documentation.api.rest.bindings.UserListType;
+import com.tableausoftware.documentation.api.rest.bindings.UserType;
 import com.tableausoftware.documentation.api.rest.bindings.ViewListType;
 import com.tableausoftware.documentation.api.rest.bindings.WorkbookListType;
 import com.tableausoftware.documentation.api.rest.bindings.WorkbookType;
@@ -69,6 +70,8 @@ public class RestApiUtils {
         QUERY_WORKBOOKS(getApiUriBuilder().path("sites/{siteId}/users/{userId}/workbooks")),
         QUERY_VIEWS(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/views")),
         QUERY_USERS_ON_SITE(getApiUriBuilder().path("sites/{siteId}/users")),
+        GET_WORKBOOK_PERMISSIONS(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/permissions")),
+        GET_USER(getApiUriBuilder().path("sites/{siteId}/users/{userId}")),
         SIGN_IN(getApiUriBuilder().path("auth/signin")),
         SIGN_OUT(getApiUriBuilder().path("auth/signout"));
 
@@ -181,6 +184,37 @@ public class RestApiUtils {
 
         return granteeCapabilities;
     }
+    
+    /*
+     * User Capabilities 
+     * 
+     */
+    public GranteeCapabilitiesType createUserGranteeCapability(UserType user, Map<String, String> capabilitiesMap) {
+        GranteeCapabilitiesType granteeCapabilities = m_objectFactory.createGranteeCapabilitiesType();
+
+        // Sets the grantee to the specified user
+        granteeCapabilities.setUser(user);
+        GranteeCapabilitiesType.Capabilities capabilities = m_objectFactory.createGranteeCapabilitiesTypeCapabilities();
+
+        // Iterates over the list of capabilities and creates a capability element
+        for (String key : capabilitiesMap.keySet()) {
+            CapabilityType capabilityType = m_objectFactory.createCapabilityType();
+
+            // Sets the capability name and permission mode
+            capabilityType.setName(key);
+            capabilityType.setMode(capabilitiesMap.get(key));
+
+            // Adds the capability to the list of capabilities for the grantee
+            capabilities.getCapability().add(capabilityType);
+        }
+
+        // Sets the list of capabilities for the grantee element
+        granteeCapabilities.setCapabilities(capabilities);
+
+        return granteeCapabilities;
+    }
+    
+    
 
     /**
      * Invokes an HTTP request to add permissions to the target workbook.
@@ -1050,7 +1084,7 @@ public class RestApiUtils {
     }
     
     /*
-     * Invoke Views 
+     * Invoke Users 
      */
     public UserListType invokeQueryUsersOnSite(TableauCredentialsType credential) {
 
@@ -1069,6 +1103,26 @@ public class RestApiUtils {
         }
 
         // No views were found
+        return null;
+    }
+    
+    public PermissionsType invokeGetWorkbookPermission(TableauCredentialsType credentials, String workbookId) {
+        m_logger.info(String.format("Querying users on site '%s'.", credentials.getSite().getId()));
+    	String url = Operation.GET_WORKBOOK_PERMISSIONS.getUrl(credentials.getSite().getId(), workbookId);
+    	TsResponse response = get(url, credentials.getToken());
+    	if (response.getPermissions() != null) {
+            m_logger.info("Query users is successful!");
+    		return response.getPermissions();
+    	} return null;
+    }
+    
+
+    public UserType invokeGetUser(TableauCredentialsType credential, String userId){
+    	String url = Operation.GET_USER.getUrl(credential.getSite().getId(), userId);
+        TsResponse response = get(url, credential.getToken());
+        if (response.getUser() != null) {
+            return response.getUser();
+        }
         return null;
     }
 }
