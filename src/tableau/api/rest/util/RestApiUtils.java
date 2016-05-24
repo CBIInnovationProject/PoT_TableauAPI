@@ -73,13 +73,31 @@ public class RestApiUtils {
         QUERY_WORKBOOKS(getApiUriBuilder().path("sites/{siteId}/users/{userId}/workbooks")),
         QUERY_VIEWS(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/views")),
         QUERY_USERS_ON_SITE(getApiUriBuilder().path("sites/{siteId}/users")),
-        GET_WORKBOOK_PERMISSIONS(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/permissions")),
-        GET_USER(getApiUriBuilder().path("sites/{siteId}/users/{userId}")),
-        GET_WORKBOOK(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}")),
+        QUERY_WORKBOOK_PERMISSIONS(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/permissions")),
+        QUERY_USER(getApiUriBuilder().path("sites/{siteId}/users/{userId}")),
+        QUERY_WORKBOOK(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}")),
         UPDATE_USER(getApiUriBuilder().path("sites/{siteId}/users/{userId}")),
         SIGN_IN(getApiUriBuilder().path("auth/signin")),
-        SIGN_OUT(getApiUriBuilder().path("auth/signout"));
-
+        SIGN_OUT(getApiUriBuilder().path("auth/signout")),
+    	
+    	/*
+    	 * (AMEL-AMEL) List Fungsi Yang Belum Dibuat 
+    	 * 
+    	 */
+    	CREATE_SITE(getApiUriBuilder().path("sites")),
+    	QUERY_SITE(getApiUriBuilder().path("sites/{siteId}")),
+    	UPDATE_SITE(getApiUriBuilder().path("sites/{siteId}")),
+    	DELETE_SITE(getApiUriBuilder().path("sites/{siteId}")),
+    	CREATE_PROJECTS(getApiUriBuilder().path("sites/{siteId}/projects")),
+    	UPDATE_PROJECT(getApiUriBuilder().path("sites/{siteId}/projects/{projectId}")),
+    	DELETE_PROJECT(getApiUriBuilder().path("sites/{siteId}/projects/{projectId}")),
+    	QUERY_VIEW_PREVIEW_IMAGE(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/views/{viewId}/previewImage")),
+    	QUERY_WORKBOOK_PREVIEW_IMAGE(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}/previewImage")),
+    	UPDATE_WORKBOOK(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}")),
+    	DELETE_WORKBOOK(getApiUriBuilder().path("sites/{siteId}/workbooks/{workbookId}")),
+    	REMOVE_USER_FROM_SITE(getApiUriBuilder().path("sites/{siteId}/users/{userId}")),
+    	ADD_USER_TO_SITE(getApiUriBuilder().path("sites/{siteId}/users"));
+    	
         private final UriBuilder m_builder;
 
         Operation(UriBuilder builder) {
@@ -1113,7 +1131,7 @@ public class RestApiUtils {
     
     public PermissionsType invokeGetWorkbookPermission(TableauCredentialsType credentials, String workbookId) {
         m_logger.info(String.format("Querying users on site '%s'.", credentials.getSite().getId()));
-    	String url = Operation.GET_WORKBOOK_PERMISSIONS.getUrl(credentials.getSite().getId(), workbookId);
+    	String url = Operation.QUERY_WORKBOOK_PERMISSIONS.getUrl(credentials.getSite().getId(), workbookId);
     	TsResponse response = get(url, credentials.getToken());
     	if (response.getPermissions() != null) {
             m_logger.info("Query users is successful!");
@@ -1123,7 +1141,7 @@ public class RestApiUtils {
     
 
     public UserType invokeGetUser(TableauCredentialsType credential, String userId){
-    	String url = Operation.GET_USER.getUrl(credential.getSite().getId(), userId);
+    	String url = Operation.QUERY_USER.getUrl(credential.getSite().getId(), userId);
         TsResponse response = get(url, credential.getToken());
         if (response.getUser() != null) {
             return response.getUser();
@@ -1132,7 +1150,7 @@ public class RestApiUtils {
     }
     
     public WorkbookType invokeGetWorkbook(TableauCredentialsType credential, String workbookId ){
-    	String url = Operation.GET_WORKBOOK.getUrl(credential.getSite().getId(), workbookId);
+    	String url = Operation.QUERY_WORKBOOK.getUrl(credential.getSite().getId(), workbookId);
     	TsResponse response = get(url, credential.getToken());
     	if(response.getWorkbook() != null) {
     		return response.getWorkbook();
@@ -1168,5 +1186,16 @@ public class RestApiUtils {
         Client client = Client.create();
         WebResource webResource = client.resource(url);
         webResource.header(TABLEAU_AUTH_HEADER, authToken).delete();
+    }
+    
+    public TsResponse get(String url, String authToken, int pageSize, int pageNumber) {
+        Client client = Client.create();
+        WebResource webResource = client.resource(url).queryParam("pageSize", pageSize+"");
+        webResource.queryParam("pageNumber", pageNumber+"");
+
+        ClientResponse clientResponse = webResource.header(TABLEAU_AUTH_HEADER, authToken).get(ClientResponse.class);
+
+        String responseXML = clientResponse.getEntity(String.class);
+        return unmarshalResponse(responseXML);
     }
 }
